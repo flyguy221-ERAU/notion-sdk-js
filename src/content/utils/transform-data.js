@@ -1,40 +1,64 @@
-const fs = require('fs');
+// Load the necessary data
+const dbAliasMap = JSON.parse(fs.readFileSync(path.join(__dirname, 'output', 'db-aliases.json'), 'utf-8'));
+const graphData = JSON.parse(fs.readFileSync(path.join(__dirname, 'graph-data.json'), 'utf-8'));
 
-// Modified version to save nodes and edges to a JSON file
-const transformData = (allProperties) => {
-  const nodes = [];
-  const edges = [];
-  const existingNodes = new Set();
+// Function to generate descriptive alias
+const generateAlias = (nodeId, label, type) => {
+  let alias = nodeId;
 
-  for (const [dbName, dbProperties] of Object.entries(allProperties)) {
-    nodes.push({ data: { id: dbName, label: dbName, type: 'database' } });
-    existingNodes.add(dbName);
+  // Step 1: Replace Database IDs with their corresponding aliases
+  if (dbAliasMap[nodeId]) {
+    alias = dbAliasMap[nodeId];
+  }
 
-    for (const [propertyName, propertyDetails] of Object.entries(dbProperties)) {
-      const propertyId = `${dbName}-${propertyDetails.id}`;
-      nodes.push({ data: { id: propertyId, label: propertyName, type: propertyDetails.type } });
-      existingNodes.add(propertyId);
+  // Step 2: For non-database nodes, generate detailed alias using label and type
+  if (label && type) {
+    alias = `${alias}_${label}_${type}`; // e.g., "Projects_DB_⚙️ Related Projects_relation"
+  }
 
-      edges.push({ data: { source: dbName, target: propertyId, type: 'contains' } });
+  return alias;
+};
 
-      if (propertyDetails.type === "relation" && propertyDetails.relation?.database_id) {
-        const relatedDatabase = propertyDetails.relation.database_id;
+// Update nodes with more descriptive aliases
+graphData.nodes.forEach(node => {
+  const { id, label, type } = node.data;
 
-        if (!existingNodes.has(relatedDatabase)) {
-          nodes.push({ data: { id: relatedDatabase, label: `Database ${relatedDatabase}`, type: 'database' } });
-          existingNodes.add(relatedDatabase);
-        }
+  // Generate a more descriptive alias
+  const descriptiveAlias = generateAlias(id, label, type);
+  node.data.label = descriptiveAlias;
+  node.data.id = descriptiveAlias; // Update ID with the alias for consistent referencing
+});
 
-        edges.push({ data: { source: propertyId, target: relatedDatabase, type: 'relation' } });
-      }
+// Update edges to use transformed node IDs
+graphData.edges.forEach(edge => {
+  const { source, target, type } = edge.data;
+
+  // Update source and target using the alias mapping or descriptive generation
+  if (dbAliasMap[source]) {
+    edge.data.source = dbAliasMap[source]; // Database source replacement
+  } else {
+    // Generate alias for relations
+    const sourceNode = graphData.nodes.find(node => node.data.id === source);
+    if (sourceNode) {
+      edge.data.source = generateAlias(sourceNode.data.id, sourceNode.data.label, sourceNode.data.type);
     }
   }
 
-  // Export the nodes and edges to a file
-  const graphData = { nodes, edges };
-  fs.writeFileSync('graph-data.json', JSON.stringify(graphData, null, 2));
+  if (dbAliasMap[target]) {
+    edge.data.target = dbAliasMap[target]; // Database target replacement
+  } else {
+    // Generate alias for relations
+    const targetNode = graphData.nodes.find(node => node.data.id === target);
+    if (targetNode) {
+      edge.data.target = generateAlias(targetNode.data.id, targetNode.data.label, targetNode.data.type);
+    }
+  }
 
-  return graphData;
-};
+  // Optionally, add an alias to the edge itself for better understanding in visualizations
+  edge.data.label = `${edge.data.source}_${edge.data.target}_${type}`;
+});
 
-module.exports = transformData;
+// Save the transformed graph data to the output folder
+const transformedGraphOutputPath = path.join(outputFolder, 'graph-data-transformed.json');
+fs.writeFileSync(transformedGraphOutputPath, JSON.stringify(graphData, null, 2));
+console.log('Transformed graph data saved as:', transformedGraphOutputPath);
