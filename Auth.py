@@ -1,8 +1,8 @@
 import requests
 import json
 
-NOTION_API_TOKEN = "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""
-DATABASE_ID = "055ebe8a52874aa0a6acb40985d86a8c""
+NOTION_API_TOKEN = <Token>
+DATABASE_ID = <DBID>
 
 url = f"https://api.notion.com/v1/databases/{DATABASE_ID}"
 
