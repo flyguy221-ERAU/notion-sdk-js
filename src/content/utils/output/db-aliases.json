@@ -1,0 +1,21 @@
+{
+  "3705af42b27f47d3850e4c5853500da4": "TASKS_DB",
+  "keyword": "KEYWORD_DB",
+  "tasks": "TASKS_DB",
+  "a65afa5269dc45ef890d2e8e8b0e2f53": "NOTES_DB",
+  "notes": "NOTES_DB",
+  "47ebc002361d43038ce1ff7f026d4593": "GOALS_DB",
+  "goals": "GOALS_DB",
+  "16852cdc12ff45b6943013539989ded4": "MILESTONES_DB",
+  "milestones": "MILESTONES_DB",
+  "0dc7fc7a4eb149aeba100c0913ce26ff": "AREAS_DB",
+  "areas": "AREAS_DB",
+  "b673b3fdfb42425bbcd03b0382ffe0f2": "REFERENCES_DB",
+  "references": "REFERENCES_DB",
+  "997051fe14c04b959837f441df381ded": "ENTITIES_DB",
+  "entities": "ENTITIES_DB",
+  "f3cc9d5de2d04c8c90d5da9f2fc2ff09": "SLIPBOX_DB",
+  "slipbox": "SLIPBOX_DB",
+  "30d88b7bd7ee42beb856c9bc73cdc110": "PROJECTS_DB",
+  "projects": "PROJECTS_DB"
+}
