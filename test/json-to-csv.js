@@ -14,8 +14,14 @@ nodes.forEach(node => {
   nodesCsv += `${id},${label},${type}\n`;
 });
 
+// Ensure the output folder exists
+const outputFolder = path.join(__dirname, 'output');
+if (!fs.existsSync(outputFolder)) {
+  fs.mkdirSync(outputFolder);
+}
+
 // Write nodes CSV to file
-fs.writeFileSync(path.join(__dirname, 'nodes.csv'), nodesCsv);
+fs.writeFileSync(path.join(outputFolder, 'nodes.csv'), nodesCsv);
 console.log('Nodes CSV file written: nodes.csv');
 
 // Prepare CSV content for edges
@@ -25,6 +31,8 @@ edges.forEach(edge => {
   edgesCsv += `${source},${target},${type}\n`;
 });
 
+
+
 // Write edges CSV to file
-fs.writeFileSync(path.join(__dirname, 'edges.csv'), edgesCsv);
+fs.writeFileSync(path.join(outputFolder, 'edges.csv'), edgesCsv);
 console.log('Edges CSV file written: edges.csv');
