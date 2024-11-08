@@ -1,9 +1,13 @@
+// Import dotenv to load environment variables
+const dotenv = require('dotenv');
 const fs = require('fs');
 const path = require('path');
-const dotenv = require('dotenv');
 
 // Load the .env file
 dotenv.config();
+
+// Check if environment variables are being loaded properly
+console.log('Loaded environment variables:', process.env);
 
 // Helper function to normalize UUIDs
 const normalizeUUID = (uuid) => uuid.replace(/-/g, '');
@@ -16,13 +20,22 @@ Object.keys(process.env).forEach(key => {
   if (key.startsWith('NOTION_') && key.endsWith('_ID')) {
     const readableName = key.replace('NOTION_', '').replace('_ID', '').toLowerCase(); // e.g., "projects"
     const uuid = process.env[key]; // e.g., "30d88b7b-d7ee-42be-b856-c9bc73cdc110"
-    const normalizedUuid = normalizeUUID(uuid); // Normalize UUID by removing hyphens
+    
+    // Check if the UUID exists and is not empty
+    if (!uuid) {
+      console.warn(`Warning: Environment variable ${key} is not set or empty.`);
+      return; // Skip this entry if the UUID is empty
+    }
 
+    const normalizedUuid = normalizeUUID(uuid); // Normalize UUID by removing hyphens
     const dbAlias = `${readableName.toUpperCase()}_DB`; // e.g., "PROJECTS_DB"
 
     // Map both the UUID and the readable name to the alias
     dbAliasMap[normalizedUuid] = dbAlias;          // Normalized UUID as key
     dbAliasMap[readableName] = dbAlias;  // Readable name as key
+
+    // Log to ensure the entry is correctly added
+    console.log(`Mapping added: ${uuid} (normalized: ${normalizedUuid}) to alias: ${dbAlias}`);
   }
 });
 
