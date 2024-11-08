@@ -1,9 +1,12 @@
 // ./scripts/get-props.js
 
-require('dotenv').config();  // Load environment variables
-const { Client } = require('@notionhq/client');
-const { improvedNormalizeString } = require('../src/utils/normalize-utils');
-const { logToFile } = require('../src/utils/log-utils');
+import dotenv from 'dotenv'; // Load environment variables
+import { Client } from '@notionhq/client';
+import { improvedNormalizeString } from '../src/utils/normalize-utils.js';
+import { logToFile } from '../src/utils/log-utils.js';
+
+// Load the .env file
+dotenv.config();
 
 const LOG_LEVEL_NONE = 0;
 const LOG_LEVEL_WARN = 1;
@@ -26,7 +29,7 @@ const log = async (level, message) => {
 const notion = new Client({
   auth: process.env.NOTION_KEY,
 });
-log(LOG_LEVEL_WARN, "Notion client initialized successfully.");
+await log(LOG_LEVEL_WARN, "Notion client initialized successfully.");
 
 // Database IDs from environment variables
 const databaseIds = {
@@ -48,26 +51,26 @@ const getAllDatabaseProperties = async () => {
 
   for (const [dbName, dbId] of Object.entries(databaseIds)) {
     try {
-      log(LOG_LEVEL_VERBOSE, `Checking database ID for ${dbName}: ${dbId}`);
+      await log(LOG_LEVEL_VERBOSE, `Checking database ID for ${dbName}: ${dbId}`);
       if (!dbId || dbId.length === 0) {
-        log(LOG_LEVEL_WARN, `Database ID for ${dbName} is missing or invalid.`);
+        await log(LOG_LEVEL_WARN, `Database ID for ${dbName} is missing or invalid.`);
         continue;
       }
 
-      log(LOG_LEVEL_VERBOSE, `Attempting to retrieve properties for database: ${dbName} (ID: ${dbId})`);
+      await log(LOG_LEVEL_VERBOSE, `Attempting to retrieve properties for database: ${dbName} (ID: ${dbId})`);
       
       // Add a delay to avoid hitting Notion's rate limit
       await sleep(process.env.RATE_LIMIT_DELAY || 200);
 
       const response = await notion.databases.retrieve({ database_id: dbId });
-      log(LOG_LEVEL_VERBOSE, `Successfully retrieved properties for database: ${dbName}`);
+      await log(LOG_LEVEL_VERBOSE, `Successfully retrieved properties for database: ${dbName}`);
 
       if (response && response.properties) {
         const normalizedProperties = {};
 
         for (const [propName, propInfo] of Object.entries(response.properties)) {
           const normalizedPropName = improvedNormalizeString(propName);
-          log(LOG_LEVEL_VERBOSE, `Original prop: "${propName}" -> Normalized prop: "${normalizedPropName}"`);
+          await log(LOG_LEVEL_VERBOSE, `Original prop: "${propName}" -> Normalized prop: "${normalizedPropName}"`);
 
           normalizedProperties[normalizedPropName] = propInfo;
         }
@@ -75,17 +78,17 @@ const getAllDatabaseProperties = async () => {
         const normalizedDbName = improvedNormalizeString(dbName);
         allProperties[normalizedDbName] = normalizedProperties;
 
-        log(LOG_LEVEL_WARN, `Properties for database "${dbName}" normalized and stored under: "${normalizedDbName}"`);
+        await log(LOG_LEVEL_WARN, `Properties for database "${dbName}" normalized and stored under: "${normalizedDbName}"`);
       } else {
-        log(LOG_LEVEL_WARN, `No properties found for database "${dbName}" (ID: ${dbId})`);
+        await log(LOG_LEVEL_WARN, `No properties found for database "${dbName}" (ID: ${dbId})`);
       }
     } catch (error) {
-      log(LOG_LEVEL_WARN, `Error retrieving properties for database "${dbName}" (ID: ${dbId}): ${error.message}`);
+      await log(LOG_LEVEL_WARN, `Error retrieving properties for database "${dbName}" (ID: ${dbId}): ${error.message}`);
       continue; // Continue to the next database in case of an error
     }
   }
 
-  log(LOG_LEVEL_WARN, 'Final normalized properties object:', JSON.stringify(allProperties, null, 2));
+  await log(LOG_LEVEL_WARN, 'Final normalized properties object:', JSON.stringify(allProperties, null, 2));
   return allProperties;
 };
 
@@ -93,16 +96,13 @@ const RATE_LIMIT_DELAY = process.env.RATE_LIMIT_DELAY || 200; // Fallback to 200
 
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-await sleep(RATE_LIMIT_DELAY);
-
-
 // Call the function if running as a standalone script
-getAllDatabaseProperties().then((allProperties) => {
+getAllDatabaseProperties().then(async (allProperties) => {
   console.log("Final normalized properties object:", JSON.stringify(allProperties, null, 2));
-  log(LOG_LEVEL_WARN, `Final normalized properties object: ${JSON.stringify(allProperties, null, 2)}`);
-}).catch((error) => {
+  await log(LOG_LEVEL_WARN, `Final normalized properties object: ${JSON.stringify(allProperties, null, 2)}`);
+}).catch(async (error) => {
   console.error("An error occurred during database property retrieval:", error);
-  log(LOG_LEVEL_WARN, `An error occurred during database property retrieval: ${error.message}`);
+  await log(LOG_LEVEL_WARN, `An error occurred during database property retrieval: ${error.message}`);
 });
 
-module.exports = getAllDatabaseProperties;
+export default getAllDatabaseProperties;
