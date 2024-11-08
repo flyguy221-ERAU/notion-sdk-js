@@ -1,31 +1,13 @@
+// ./scripts/transform-data.js
 const fs = require('fs');
 const path = require('path');
+const { generateAlias, normalizeUUID } = require('./centralized-alias-utils');
 
 // Define the output folder path
 const outputFolder = path.join(__dirname, 'output');
 
-// Helper function to normalize UUIDs
-const normalizeUUID = (uuid) => uuid.replace(/-/g, '');
-
-// Load alias mapping and graph data
-const dbAliasMap = JSON.parse(fs.readFileSync(path.join(outputFolder, 'db-aliases.json'), 'utf-8'));
+// Load graph data
 const graphData = JSON.parse(fs.readFileSync(path.join(outputFolder, 'graph-data.json'), 'utf-8'));
-
-// Function to generate descriptive alias
-const generateAlias = (nodeId, label, type) => {
-  // Step 1: Replace Database IDs with their corresponding aliases
-  let alias = dbAliasMap[normalizeUUID(nodeId)] || dbAliasMap[nodeId] || null;
-
-  // Step 2: Fallback to a combination of node ID, label, and type if alias not found
-  if (!alias && label && type) {
-    alias = `${nodeId}_${label}_${type}`; // e.g., "Projects_DB_⚙️ Related Projects_relation"
-  } else if (!alias) {
-    // If there's no alias and no label/type available, fallback to using a clear identifier
-    alias = `UNKNOWN_${nodeId}`;
-  }
-
-  return alias;
-};
 
 // Main transformation function
 const transformData = (allProperties) => {
@@ -35,9 +17,8 @@ const transformData = (allProperties) => {
 
   // Iterate through allProperties to create nodes and edges
   for (const [dbId, dbProperties] of Object.entries(allProperties)) {
-    // Normalize dbId to match the alias map
-    const normalizedDbId = normalizeUUID(dbId);
-    const dbAlias = dbAliasMap[normalizedDbId] || dbAliasMap[dbId] || null;
+    // Generate alias for the database
+    const dbAlias = generateAlias(dbId);
 
     if (!dbAlias) {
       console.warn(`Warning: Alias not found for database ID ${dbId}`);
@@ -66,8 +47,7 @@ const transformData = (allProperties) => {
       // Handle relations
       if (propertyDetails.type === "relation" && propertyDetails.relation?.database_id) {
         const relatedDatabaseId = propertyDetails.relation.database_id;
-        const normalizedRelatedId = normalizeUUID(relatedDatabaseId);
-        const relatedAlias = dbAliasMap[normalizedRelatedId] || dbAliasMap[relatedDatabaseId] || null;
+        const relatedAlias = generateAlias(relatedDatabaseId);
 
         if (!relatedAlias) {
           console.warn(`Warning: Alias not found for related database ID ${relatedDatabaseId}`);
