@@ -3,7 +3,7 @@ const { Client } = require('@notionhq/client');
 const { normalizeString } = require('../src/utils/normalize-utils');
 const { logToFile } = require('../src/utils/log-utils');
 
-const DEBUG_LEVEL = 0; // 0 = No logs, 1 = Minimal logs, 2 = Full logs
+const DEBUG_LEVEL = 2; // 0 = No logs, 1 = Minimal logs, 2 = Full logs
 
 const log = (level, message) => {
   if (DEBUG_LEVEL >= level) {
