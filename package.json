@@ -2,18 +2,17 @@
   "name": "notion-sdk-js",
   "version": "1.0.0",
   "description": "Forked Notion API client with customized scripts for generating aliases.",
-  "type": "commonjs", // Changed from "module" to "commonjs" to support require() instead of ES6 import/export
   "engines": {
-    "node": ">=12" // 
+    "node": ">=12"
   },
-  "main": "app.js", 
+  "main": "app.js",
   "homepage": "https://developers.notion.com/docs/getting-started",
   "bugs": {
-    "url": "https://github.com/flyguy221-ERAU/notion-sdk-js/issues" 
+    "url": "https://github.com/flyguy221-ERAU/notion-sdk-js/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/flyguy221-ERAU/notion-sdk-js/" 
+    "url": "https://github.com/flyguy221-ERAU/notion-sdk-js/"
   },
   "keywords": [
     "notion",
@@ -33,10 +32,10 @@
     "prebuild": "npm run clean",
     "clean": "rm -rf ./build",
     "checkLoggedIn": "./scripts/verifyLoggedIn.sh",
-    "start": "node ./scripts/get-props.js",  // Added a start script to run  get-props.js
-    "generate-aliases": "node alias-gen.js"  // Script to run alias-gen.js for generating aliases
+    "start": "node ./scripts/get-props.js",
+    "generate-aliases": "node alias-gen.js"
   },
-  "author": "Jeremy Feagan", 
+  "author": "Jeremy Feagan",
   "license": "MIT",
   "files": [
     "build/package.json",
@@ -45,25 +44,25 @@
   "dependencies": {
     "@notionhq/client": "^2.2.15",
     "@types/node-fetch": "^2.5.10",
-    "axios": "^1.7.7",         // Useful for making additional HTTP requests, if needed.
-    "csv-parser": "^3.0.0",    // If working with CSVs.
-    "cytoscape": "^3.30.3",    // Useful for generating graph visualizations.
-    "dotenv": "^16.4.5",       // Required to load .env variables.
-    "express": "^4.21.1",      // Might be useful if you plan to add a server component.
-    "node-fetch": "^2.6.1",    // Used for fetching data.
-    "fs": "^0.0.1-security",   // Typically included by default, but keep it to avoid compatibility issues.
-    "tsc": "^2.0.4"            // TypeScript compiler.
+    "axios": "^1.7.7",
+    "csv-parser": "^3.0.0",
+    "cytoscape": "^3.30.3",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "node-fetch": "^2.6.1",
+    "fs": "^0.0.1-security",
+    "tsc": "^2.0.4"
   },
   "devDependencies": {
-    "@types/jest": "^28.1.4",   // Needed for testing.
-    "@typescript-eslint/eslint-plugin": "^5.39.0", // Linting support for TypeScript.
+    "@types/jest": "^28.1.4",
+    "@typescript-eslint/eslint-plugin": "^5.39.0",
     "@typescript-eslint/parser": "^5.39.0",
-    "cspell": "^5.4.1",         // Spelling and grammar checks.
-    "eslint": "^7.24.0",        // JavaScript/TypeScript linting.
-    "jest": "^28.1.2",          // Testing framework.
-    "markdown-link-check": "^3.8.7", // Verify Markdown links.
-    "prettier": "^2.8.8",       // Code formatting.
-    "ts-jest": "^28.0.5",       // Jest integration for TypeScript.
-    "typescript": "^4.9.5"      // TypeScript support.
+    "cspell": "^5.4.1",
+    "eslint": "^7.24.0",
+    "jest": "^28.1.2",
+    "markdown-link-check": "^3.8.7",
+    "prettier": "^2.8.8",
+    "ts-jest": "^28.0.5",
+    "typescript": "^4.9.5"
   }
 }
