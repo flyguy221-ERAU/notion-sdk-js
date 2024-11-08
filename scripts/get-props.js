@@ -2,7 +2,7 @@
 
 require('dotenv').config();  // Load environment variables
 const { Client } = require('@notionhq/client');
-const { normalizeString } = require('../src/utils/normalize-utils');
+const { improvedNormalizedString } = require('../src/utils/normalize-utils');
 const { logToFile } = require('../src/utils/log-utils');
 
 const DEBUG_LEVEL = 2; // 0 = No logs, 1 = Minimal logs, 2 = Full logs
@@ -62,13 +62,13 @@ const getAllDatabaseProperties = async () => {
         const normalizedProperties = {};
 
         for (const [propName, propInfo] of Object.entries(response.properties)) {
-          const normalizedPropName = normalizeString(propName);
+          const normalizedPropName = improvedNormalizedString(propName);
           log(2, `Original prop: "${propName}" -> Normalized prop: "${normalizedPropName}"`);
 
           normalizedProperties[normalizedPropName] = propInfo;
         }
 
-        const normalizedDbName = normalizeString(dbName);
+        const normalizedDbName = improvedNormalizedString(dbName);
         allProperties[normalizedDbName] = normalizedProperties;
 
         log(1, `Properties for database "${dbName}" normalized and stored under: "${normalizedDbName}"`);
