@@ -1,3 +1,5 @@
+// ./scripts/get-props.js
+
 require('dotenv').config();  // Load environment variables
 const { Client } = require('@notionhq/client');
 const { normalizeString } = require('../src/utils/normalize-utils');
