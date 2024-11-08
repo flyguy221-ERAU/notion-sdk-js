@@ -1,4 +1,4 @@
-// alias-gen.js
+// ./scripts/alias-gen.js
 const dotenv = require('dotenv');
 const fs = require('fs');
 const path = require('path');
