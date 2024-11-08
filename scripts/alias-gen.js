@@ -2,7 +2,7 @@
 const dotenv = require('dotenv');
 const fs = require('fs');
 const path = require('path');
-const { normalizeUUID } = require('./centralized-alias-utils');
+const { normalizeUUID, normalizeString } = require('./centralized-alias-utils');
 
 // Load the .env file
 dotenv.config();
@@ -16,8 +16,9 @@ const dbAliasMap = {};
 // Extract relevant keys from process.env
 Object.keys(process.env).forEach(key => {
   if (key.startsWith('NOTION_') && key.endsWith('_ID')) {
-    const readableName = key.replace('NOTION_', '').replace('_ID', '').toLowerCase(); // e.g., "projects"
-    const uuid = process.env[key]; // e.g., "30d88b7b-d7ee-42be-b856-c9bc73cdc110"
+    let readableName = key.replace('NOTION_', '').replace('_ID', '');
+    readableName = normalizeString(readableName); // Clean up readable names
+    const uuid = process.env[key]; // e.g., "32 character Notion Database ID"
     
     // Check if the UUID exists and is not empty
     if (!uuid) {
@@ -26,11 +27,11 @@ Object.keys(process.env).forEach(key => {
     }
 
     const normalizedUuid = normalizeUUID(uuid); // Normalize UUID by removing hyphens
-    const dbAlias = `${readableName.toUpperCase()}_DB`; // e.g., "PROJECTS_DB"
+    const dbAlias = `${normalizeString(readableName.toUpperCase())}_DB`; // e.g., "PROJECTS_DB", ensuring no emojis or unwanted characters
 
     // Map both the UUID and the readable name to the alias
     dbAliasMap[normalizedUuid] = dbAlias;          // Normalized UUID as key
-    dbAliasMap[readableName] = dbAlias;  // Readable name as key
+    dbAliasMap[normalizeString(readableName)] = dbAlias;  // Clean readable name as key
 
     // Log to ensure the entry is correctly added
     console.log(`Mapping added: ${uuid} (normalized: ${normalizedUuid}) to alias: ${dbAlias}`);
