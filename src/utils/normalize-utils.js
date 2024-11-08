@@ -3,14 +3,16 @@ const normalizeString = (str) => {
     console.warn('Warning: normalizeString received a non-string or empty value:', str);
     return ''; // Returning an empty string or a sensible default
   }
-  
+
   // Remove emojis using regex, normalize to lowercase, and trim
   return str
-    .replace(/[\u{1F300}-\u{1F5FF}|\u{1F600}-\u{1F64F}|\u{1F680}-\u{1F6FF}|\u{2600}-\u{26FF}|\u{2700}-\u{27BF}]/gu, '') // Regex for most common emojis
+    .replace(/[\p{Emoji}\u200D\uFE0F]/gu, '') // Regex for emojis, zero-width joiners, and variation selectors
     .toLowerCase()
     .trim();
 };
 
-module.exports = {
-  normalizeString,
+const removeNonPrintableChars = (str) => str.replace(/[\x00-\x1F\x7F-\x9F]/g, '');
+
+const improvedNormalizeString = (str) => {
+  return removeNonPrintableChars(normalizeString(str));
 };
