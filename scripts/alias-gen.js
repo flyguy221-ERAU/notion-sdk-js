@@ -1,16 +1,14 @@
-// Import dotenv to load environment variables
+// alias-gen.js
 const dotenv = require('dotenv');
 const fs = require('fs');
 const path = require('path');
+const { normalizeUUID } = require('./centralized-alias-utils');
 
 // Load the .env file
 dotenv.config();
 
 // Check if environment variables are being loaded properly
 console.log('Loaded environment variables:', process.env);
-
-// Helper function to normalize UUIDs
-const normalizeUUID = (uuid) => uuid.replace(/-/g, '');
 
 // Create a map to store the database ID aliases from the .env file
 const dbAliasMap = {};
@@ -49,3 +47,6 @@ if (!fs.existsSync(outputFolder)) {
 const aliasesOutputPath = path.join(outputFolder, 'db-aliases.json');
 fs.writeFileSync(aliasesOutputPath, JSON.stringify(dbAliasMap, null, 2));
 console.log('Database alias mapping generated:', dbAliasMap);
+
+// Export alias map
+module.exports = dbAliasMap;
