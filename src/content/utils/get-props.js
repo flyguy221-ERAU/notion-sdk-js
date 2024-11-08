@@ -1,5 +1,6 @@
 require('dotenv').config();  // Load environment variables
 const { Client } = require('@notionhq/client');
+const { normalizeString } = require('./normalize-utils');
 
 // Initializing a Notion client
 const notion = new Client({
@@ -28,9 +29,13 @@ const getAllDatabaseProperties = async () => {
     try {
       const response = await notion.databases.retrieve({ database_id: dbId });
       if (response && response.properties) {
-        console.log(`Properties for database: ${dbName}`);
-        console.dir(response.properties, { depth: null }); // Use console.dir for better visualization of objects
-        allProperties[dbName] = response.properties;
+        // Normalize properties before saving them
+        const normalizedProperties = {};
+        for (const [propName, propInfo] of Object.entries(response.properties)) {
+          const normalizedPropName = normalizeString(propName);
+          normalizedProperties[normalizedPropName] = propInfo;
+        }
+        allProperties[normalizeString(dbName)] = normalizedProperties;
       }
     } catch (error) {
       console.error(`Error retrieving properties for database ${dbName}:`, error.message);
