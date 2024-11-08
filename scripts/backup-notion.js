@@ -20,6 +20,9 @@ if (!fs.existsSync(backupPath)) {
   fs.mkdirSync(backupPath, { recursive: true });
 }
 
+// Helper function to add a delay (to manage rate limits)
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
 // Function to retrieve a list of Notion databases
 async function getDatabases() {
   try {
@@ -75,6 +78,9 @@ async function backupNotion() {
       // Write backup data to a file
       fs.writeFileSync(dbBackupPath, JSON.stringify(backupData, null, 2));
       console.log(`Database ${dbName} backed up to ${dbBackupPath}`);
+
+      // Delay to manage the rate limit
+      await delay(400); // Delay 400 ms to stay well within the rate limit (3 requests per second)
     }
 
     console.log('Notion backup completed successfully!');
