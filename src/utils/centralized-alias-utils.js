@@ -1,5 +1,4 @@
-// ./src/utils/centralized-alias-utils.js
-
+// centralized-alias-utils.js
 
 const fs = require('fs');
 const path = require('path');
@@ -59,4 +58,9 @@ const generateAlias = (nodeId, label = '', type = '') => {
 
 module.exports = {
   generateAlias,
+  normalizeUUID,
 };
+
+// Example Usage in Other Scripts
+// const { generateAlias, normalizeUUID } = require('./centralized-alias-utils');
+// const alias = generateAlias(nodeId, label, type);
